@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Symfony Doc Bot{% endblock %}
+
+{% block body %}
+    <h1>SymfonyDocBot</h1>
+    <article>
+        {{ form(form) }}
+        {% for answerBlock in answer|split('```\n') %}
+            {{ answerBlock|trim('\n', 'right')|markdown_to_html }}
+        {% endfor %}
+    </article>
+{% endblock %}
