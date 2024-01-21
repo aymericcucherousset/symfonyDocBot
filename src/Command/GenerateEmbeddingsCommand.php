@@ -77,13 +77,13 @@ class GenerateEmbeddingsCommand extends Command
         );
 
         $io->section('Génération des embeddings');
-        $progressBar = $io->createProgressBar(count($documents));
+        $progressBar = $io->createProgressBar(count($splittedDocuments));
         $progressBar->start();
 
         $embeddedDocuments = [];
 
-        foreach ($documents as $document) {
-            $embeddedDocuments[] = $this->docManager->generateEmbedding($document);
+        foreach ($splittedDocuments as $splittedDocument) {
+            $embeddedDocuments[] = $this->docManager->generateEmbedding($splittedDocument);
             $progressBar->advance();
         }
 
