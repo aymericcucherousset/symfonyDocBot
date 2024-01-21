@@ -12,4 +12,7 @@ class Embedding extends DoctrineEmbeddingEntityBase
 {
     #[ORM\Column(type: Types::STRING, nullable: true)]
     public ?string $type;
+
+    #[ORM\Column(type: Types::STRING, nullable: true, length: 5)]
+    public ?string $version;
 }

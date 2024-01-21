@@ -19,23 +19,19 @@ class ChatbotController extends AbstractController
     #[Route('/', name: 'app_chatbot')]
     public function index(Request $request): Response
     {
-        $answer = '';
         $form = $this->createForm(ChatbotType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $question = $form->getData()['question'];
-            $answer = $this->chatManager->generateAnswer($question);
-
-            return $this->render('chatbot/index.html.twig', [
-                'form' => $form,
-                'answer' => $answer,
-            ]);
+            $version = $form->getData()['version'];
+            $answer = $this->chatManager->generateAnswer($question, $version);
         }
 
         return $this->render('chatbot/index.html.twig', [
             'form' => $form,
-            'answer' => $answer,
+            'answer' => $answer ?? null,
+            'version' => $version ?? null,
         ]);
     }
 }
