@@ -27,7 +27,8 @@ final class Version20240120182926 extends AbstractMigration
             type TEXT,
             sourcetype TEXT,
             sourcename TEXT,
-            embedding VECTOR
+            embedding VECTOR,
+            version TEXT
          );');
 
         $this->addSql('ALTER TABLE embedding ALTER embedding TYPE vector(1536)');

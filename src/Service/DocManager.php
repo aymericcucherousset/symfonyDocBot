@@ -2,7 +2,15 @@
 
 namespace App\Service;
 
+use App\Entity\Embedding;
 use App\Exception\GithubApiException;
+use Doctrine\ORM\EntityManagerInterface;
+use LLPhant\Embeddings\DataReader\FileDataReader;
+use LLPhant\Embeddings\Document;
+use LLPhant\Embeddings\DocumentSplitter\DocumentSplitter;
+use LLPhant\Embeddings\EmbeddingGenerator\OpenAIEmbeddingGenerator;
+use LLPhant\Embeddings\VectorStores\Doctrine\DoctrineVectorStore;
+use Symfony\Component\Finder\Finder;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class DocManager
@@ -55,8 +63,52 @@ class DocManager
         return in_array($version, self::SYMFONY_VERSIONS);
     }
 
+    /**
+     * @return string[]
+     */
+    public static function getSubDirectories(string $path): array
+    {
+        // Create an array of all subdirectories
+        $finder = new Finder();
+        $directories = $finder
+            ->in($path)
+            ->directories()
+            ->sortByName()
+        ;
+
+        $directoriesArray = [];
+        foreach ($directories as $directory) {
+            $directoriesArray[] = $directory->getRelativePathname();
+        }
+
+        return $directoriesArray;
+    }
+
+    /**
+     * @return Document[]
+     */
+    public static function getDocuments(string $path): array
+    {
+        $dataReader = new FileDataReader(
+            "$path",
+            Embedding::class
+        );
+        $documents = $dataReader->getDocuments();
+
+        foreach (self::getSubDirectories($path) as $directory) {
+            $dataReader = new FileDataReader(
+                "$path/$directory",
+                Embedding::class
+            );
+            $documents = array_merge($documents, $dataReader->getDocuments());
+        }
+
+        return $documents;
+    }
+
     public function __construct(
         private HttpClientInterface $httpClient,
+        private EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -167,8 +219,81 @@ class DocManager
             $this->createFolderIfNotExists($directory);
 
             // Write the file
-            file_put_contents($filePath, $fileContent);
+            file_put_contents($filePath, "version: $branch\n".$fileContent);
             sleep($delayAgainstDDOS);
         }
+    }
+
+    /**
+     * @param Document[] $documents
+     *
+     * @return Document[]
+     */
+    public function splitDocuments(
+        array $documents,
+        int $maxLength = 500
+    ): array {
+        return DocumentSplitter::splitDocuments(
+            $documents,
+            $maxLength
+        );
+    }
+
+    public function generateEmbedding(Document $document): Document
+    {
+        $embeddingGenerator = new OpenAIEmbeddingGenerator();
+
+        return $embeddingGenerator->embedDocument($document);
+    }
+
+    /**
+     * @param Document[] $splittedDocuments
+     *
+     * @return Document[]
+     */
+    public function generateEmbeddings(array $splittedDocuments): array
+    {
+        $embeddingGenerator = new OpenAIEmbeddingGenerator();
+
+        return $embeddingGenerator->embedDocuments($splittedDocuments);
+    }
+
+    public function getVectorStore(): DoctrineVectorStore
+    {
+        return new DoctrineVectorStore(
+            $this->entityManager,
+            Embedding::class
+        );
+    }
+
+    public function saveEmbedding(
+        Document $document,
+        DoctrineVectorStore $vectorStore,
+        string $version,
+    ): void {
+        // Convert the document to an embedding entity
+        // Save the embedding in the database with the symfony version
+        $embedding = new Embedding();
+        $embedding->content = $document->content;
+        $embedding->type = $document->sourceType;
+        $embedding->version = $document->sourceName;
+        $embedding->embedding = $document->embedding;
+        $embedding->hash = $document->hash;
+        $embedding->chunkNumber = $document->chunkNumber;
+        $embedding->version = $version;
+
+        $vectorStore->addDocument($embedding);
+    }
+
+    /**
+     * @param Document[] $embeddedDocuments
+     */
+    public function saveEmbeddings(array $embeddedDocuments): void
+    {
+        $vectorStore = new DoctrineVectorStore(
+            $this->entityManager,
+            Embedding::class
+        );
+        $vectorStore->addDocuments($embeddedDocuments);
     }
 }

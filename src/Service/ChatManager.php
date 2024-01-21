@@ -12,6 +12,8 @@ use LLPhant\Query\SemanticSearch\QuestionAnswering;
 
 class ChatManager
 {
+    public const FILTER_VERSION = 'version';
+
     private OpenAIConfig $openAIConfig;
 
     public function __construct(
@@ -22,8 +24,10 @@ class ChatManager
         $this->openAIConfig->apiKey = $this->openAiApiKey;
     }
 
-    public function generateAnswer(string $question): string
-    {
+    public function generateAnswer(
+        string $question,
+        string $version = '6.4'
+    ): string {
         $vectorStore = new DoctrineVectorStore(
             $this->entityManager,
             Embedding::class,
@@ -37,6 +41,8 @@ class ChatManager
             new OpenAIChat($this->openAIConfig)
         );
 
-        return $qa->answerQuestion($question);
+        return $qa->answerQuestion($question, 4, [
+            self::FILTER_VERSION => $version,
+        ]);
     }
 }
