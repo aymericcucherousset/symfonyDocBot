@@ -7,6 +7,11 @@ doctrine:
         #server_version: '16'
 
         profiling_collect_backtrace: '%kernel.debug%'
+        types:
+            vector: LLPhant\Embeddings\VectorStores\Doctrine\VectorType
+        mapping_types:
+            enum: string
+            vector: array
     orm:
         auto_generate_proxy_classes: true
         enable_lazy_ghost_objects: true

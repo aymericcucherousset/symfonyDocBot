@@ -25,7 +25,8 @@
 ###< symfony/asset-mapper ###
 
 *.local
-public/symfonyBaseDoc/*/*.rst
+public/**/*.rst.inc
+public/**/*.rst
 
 ###> phpstan/phpstan ###
 phpstan.neon
