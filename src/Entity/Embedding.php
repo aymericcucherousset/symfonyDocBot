@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
+use App\Repository\EmbeddingRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use LLPhant\Embeddings\VectorStores\Doctrine\DoctrineEmbeddingEntityBase;
 
-#[ORM\Entity()]
+#[ORM\Entity(repositoryClass: EmbeddingRepository::class)]
 #[ORM\Table(name: 'embedding')]
 class Embedding extends DoctrineEmbeddingEntityBase
 {
