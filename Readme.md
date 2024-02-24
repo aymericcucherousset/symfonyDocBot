@@ -5,6 +5,9 @@ Symfony (6.4) chat bot based on [Yoandev article](https://yoandev.co/construire-
 ## Requirement
 
 - php: 8.3
+- [Symfony CLI](https://github.com/symfony-cli/symfony-cli/releases)
+- [Composer 2](https://github.com/composer/composer/releases)
+- Docker (or PostgreSQL database)
 - OpenAI API key
 
 ## Features
@@ -16,9 +19,7 @@ Symfony (6.4) chat bot based on [Yoandev article](https://yoandev.co/construire-
 
 ## Starting
 
-1. Config your OpenAI API key in [.env](.env)
-2. Install dependencies `composer install`
-3. Run the project `symfony serve`
+Start the project with the following [doc file](doc/Start.md).
 
 ## Contribute
 
