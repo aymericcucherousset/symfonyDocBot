@@ -2,6 +2,8 @@
 
 Symfony (6.4) chat bot based on [Yoandev article](https://yoandev.co/construire-un-rag-en-php-avec-la-doc-de-symfony-llphant-et-openai) and [Symfony doc](https://github.com/symfony/symfony-docs).
 
+![Symfony doc bot](doc/assets/chat-page.png)  
+
 ## Requirement
 
 - php: 8.3
