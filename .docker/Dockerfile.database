@@ -2,6 +2,5 @@ FROM postgres:${POSTGRES_VERSION:-16}-alpine
 
 WORKDIR /tmp
 RUN git clone --branch v0.4.4 https://github.com/pgvector/pgvector.git
-WORKDIR cd /tmp/pgvector
+WORKDIR /tmp/pgvector
 RUN make install
-RUN 
