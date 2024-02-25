@@ -2,6 +2,25 @@
 version: '3'
 
 services:
+  app:
+    env_file:
+      - .env.local
+    build:
+      context: .docker
+      dockerfile: Dockerfile
+      target: dev
+    image: symfony_doc_bot
+    container_name: symfony_doc_bot
+    dns:
+      - 8.8.8.8
+    volumes:
+      - .:/var/www/html:rw
+    command: ["symfony", "server:start"]
+    ports:
+      - ${DOCKER_APP_PORT}:8000
+    depends_on:
+      - database
+
   database:
     image: ankane/pgvector
     environment:
