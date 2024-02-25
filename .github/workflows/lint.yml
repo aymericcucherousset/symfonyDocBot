@@ -16,7 +16,7 @@ jobs:
               run: make install
 
             - name: Lint code
-              run: make lint
+              run: make sf-lint
 
             - name: Phpstan
               run: make phpstan
