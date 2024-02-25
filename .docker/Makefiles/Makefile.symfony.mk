@@ -6,7 +6,7 @@ SYMFONY = $(EXEC) symfony
 sf: ## List all Symfony commands
 	$(SYMFONY) list
 
-sf-clear-cache: ## Clear the cache
+sf-cache-clear: ## Clear the cache
 	$(SYMFONY_CONSOLE) cache:clear
 
 sf-lint: ## Lint twig and yaml files
