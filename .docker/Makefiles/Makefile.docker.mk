@@ -1,7 +1,7 @@
 DOCKER = docker
 DOCKER_COMPOSE = docker-compose --env-file .env.local
 DOCKER_WWW = app
-EXEC = $(DOCKER_COMPOSE) exec $(DOCKER_WWW)
+EXEC = $(DOCKER_COMPOSE) exec -t $(DOCKER_WWW)
 
 ## —— 🐳 Docker 🐳 ——
 
