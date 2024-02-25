@@ -1,0 +1,29 @@
+name: Lint
+
+on: [push]
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Preprare environment
+              run: cp .env .env.local
+
+            - name: Install dependencies
+              run: make install
+
+            - name: Lint code
+              run: make lint
+
+            - name: Phpstan
+              run: make phpstan
+
+            - name: Phpcsfixer
+              run: make php-cs-fixer-dry-run
+
+            - name: Stop containers
+              if: always()
+              run: make docker-down
