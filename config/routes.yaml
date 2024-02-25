@@ -1,3 +1,4 @@
+---
 controllers:
     resource:
         path: ../src/Controller/

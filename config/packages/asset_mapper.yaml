@@ -1,3 +1,4 @@
+---
 framework:
     asset_mapper:
         # The paths to make available to the asset mapper.

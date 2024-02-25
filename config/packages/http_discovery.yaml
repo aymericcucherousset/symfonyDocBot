@@ -1,3 +1,4 @@
+---
 services:
     Psr\Http\Message\RequestFactoryInterface: '@http_discovery.psr17_factory'
     Psr\Http\Message\ResponseFactoryInterface: '@http_discovery.psr17_factory'

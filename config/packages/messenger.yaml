@@ -1,3 +1,4 @@
+---
 framework:
     messenger:
         failure_transport: failed
