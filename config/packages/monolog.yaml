@@ -1,6 +1,8 @@
+---
 monolog:
     channels:
-        - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
+        # Deprecations are logged in the dedicated "deprecation" channel when it exists
+        - deprecation
 
 when@dev:
     monolog:
@@ -12,10 +14,10 @@ when@dev:
                 channels: ["!event"]
             # uncomment to get logging in your browser
             # you may have to allow bigger header sizes in your Web server configuration
-            #firephp:
+            # firephp:
             #    type: firephp
             #    level: info
-            #chromephp:
+            # chromephp:
             #    type: chromephp
             #    level: info
             console:
