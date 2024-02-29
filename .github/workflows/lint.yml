@@ -3,7 +3,7 @@ name: Lint
 on: [push]
 
 jobs:
-    lint:
+    ci:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
@@ -23,6 +23,9 @@ jobs:
 
             - name: Phpcsfixer
               run: make php-cs-fixer-dry-run
+
+            - name: Run tests
+              run: make test
 
             - name: Stop containers
               if: always()
