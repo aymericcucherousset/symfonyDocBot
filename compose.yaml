@@ -23,6 +23,8 @@ services:
 
   database:
     image: ankane/pgvector
+    env_file:
+      - .env.local
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-app}
       # You should definitely change the password in production
