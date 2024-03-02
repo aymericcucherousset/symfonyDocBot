@@ -9,6 +9,7 @@ include .docker/Makefiles/Makefile.docker.mk
 include .docker/Makefiles/Makefile.php.mk
 include .docker/Makefiles/Makefile.composer.mk
 include .docker/Makefiles/Makefile.symfony.mk
+include .docker/Makefiles/Makefile.test.mk
 include .docker/Makefiles/Makefile.database.mk
 include .docker/Makefiles/Makefile.tools.mk
 include .docker/Makefiles/Makefile.app.mk
