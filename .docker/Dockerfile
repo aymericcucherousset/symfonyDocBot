@@ -7,8 +7,9 @@ RUN apk --no-cache add \
     # Install PHP extensions dependencies
     postgresql-dev \
     oniguruma-dev \
+    libzip-dev \
     # Enable Php extensions
-    && docker-php-ext-install pdo pdo_pgsql intl mbstring
+    && docker-php-ext-install pdo pdo_pgsql intl mbstring zip
 
 # Image DEV
 FROM base AS dev

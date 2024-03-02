@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use App\Entity\Embedding;
-use App\Exception\GithubApiException;
 use Doctrine\ORM\EntityManagerInterface;
 use LLPhant\Embeddings\DataReader\FileDataReader;
 use LLPhant\Embeddings\Document;
@@ -107,6 +106,7 @@ class DocManager
     }
 
     public function __construct(
+        private string $tempDownloadPath,
         private HttpClientInterface $httpClient,
         private EntityManagerInterface $entityManager,
     ) {
@@ -115,77 +115,9 @@ class DocManager
     public function getDocPath(
         string $user = self::SYMFONY_USER,
         string $repository = self::SYMFONY_REPOSITORY,
+        string $branch = '6.4'
     ): string {
-        return $this->publicPath.$user.'-'.$repository.'/';
-    }
-
-    private function isFileWithExtension(
-        string $file,
-        string $extension = self::EXTENSION_RST
-    ): bool {
-        return false !== strpos($file, $extension);
-    }
-
-    private function isFile(string $type): bool
-    {
-        return self::TYPE_FILE === $type;
-    }
-
-    /**
-     * @param string[] $directories
-     */
-    private function fileIsNotInDirectories(
-        string $file,
-        array $directories
-    ): bool {
-        foreach ($directories as $directory) {
-            if (false !== strpos($file, $directory)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @return string[]
-     */
-    private function getDocFilesInRepository(
-        string $githubUser,
-        string $githubRepository,
-        string $branch,
-    ): array {
-        // make a request to the Github API url
-        // https://api.github.com/repos/[USER]/[REPO]/git/trees/[BRANCH]?recursive=1
-
-        $response = $this->httpClient->request(
-            self::API_GET_METHOD,
-            "https://api.github.com/repos/$githubUser/$githubRepository/git/trees/$branch?recursive=1"
-        );
-
-        if (200 !== $response->getStatusCode()
-            || 'application/json; charset=utf-8' !== $response->getHeaders()['content-type'][0]
-        ) {
-            throw new GithubApiException('Error while getting files from Github API');
-        }
-
-        // Parse the response to get only the files
-        /** @var array{
-         *      int,
-         *      array{path: string, mode: string, type: string, sha: string, size: int, url: string}
-         *  } $content */
-        $content = $response->toArray()['tree'];
-        $files = [];
-        foreach ($content as $file) {
-            if ($this->isFile($file['type'])
-                && $this->isFileWithExtension($file['path'], self::EXTENSION_RST)
-                && $this->fileIsNotInDirectories($file['path'], self::DIRECTORIES_TO_IGNORE)
-            ) {
-                $files[] = $file['path'];
-            }
-        }
-
-        return $files;
+        return $this->publicPath.$user.'-'.$repository.'/'.$branch.'/';
     }
 
     private function createFolderIfNotExists(string $path): void
@@ -195,33 +127,91 @@ class DocManager
         }
     }
 
-    public function downloadDoc(
-        string $githubUser,
-        string $githubRepository,
+    public function downloadZipRepository(
+        string $user,
+        string $repository,
         string $branch,
-        int $delayAgainstDDOS = 1
     ): void {
-        $files = $this->getDocFilesInRepository($githubUser, $githubRepository, $branch);
-        $localPath = $this->getDocPath($githubUser, $githubRepository);
+        $fileContent = $this->httpClient->request(
+            self::API_GET_METHOD,
+            "https://codeload.github.com/$user/$repository/zip/$branch"
+        )->getContent();
 
-        // Download the files in the local path
-        // https://raw.githubusercontent.com/[USER]/[REPO]/[BRANCH]/[PATH]
-        // public/symfony-symfony-docs/[BRANCH]/[FILE]
+        // Create the directory if it does not exist
+        $this->createFolderIfNotExists($this->tempDownloadPath);
+
+        // Write the file
+        file_put_contents($this->tempDownloadPath."$user-$repository-$branch.zip", $fileContent);
+    }
+
+    public function unzipRepository(
+        string $user,
+        string $repository,
+        string $branch,
+    ): void {
+        $zip = new \ZipArchive();
+        $res = $zip->open($this->tempDownloadPath."$user-$repository-$branch.zip");
+        if (true === $res) {
+            $zip->extractTo($this->tempDownloadPath);
+            $zip->close();
+        }
+    }
+
+    public function moveFilesInPublic(
+        string $user,
+        string $repository,
+        string $branch,
+    ): void {
+        // Create the directory if it does not exist
+        $localPath = $this->getDocPath($user, $repository, $branch);
+        $this->createFolderIfNotExists($localPath);
+
+        // Find files in temp path to move in the public directory when the extension is .rst
+        $finder = new Finder();
+        $files = $finder
+            ->in($this->tempDownloadPath."$repository-$branch")
+            ->files()
+            ->name('*.rst')
+            ->sortByName()
+        ;
+
         foreach ($files as $file) {
-            $fileContent = $this->httpClient->request(
-                self::API_GET_METHOD,
-                "https://raw.githubusercontent.com/$githubUser/$githubRepository/$branch/$file"
-            )->getContent();
-
-            // Create the directory if it does not exist
-            $filePath = $localPath."$branch/".$file;
+            $filePath = $localPath.$file->getRelativePathname();
             $directory = dirname($filePath);
             $this->createFolderIfNotExists($directory);
-
-            // Write the file
-            file_put_contents($filePath, "version: $branch\n".$fileContent);
-            sleep($delayAgainstDDOS);
+            copy($file->getRealPath(), $filePath);
         }
+    }
+
+    private function deleteDirectory(string $path): void
+    {
+        $files = array_diff(scandir($path), ['.', '..']);
+        foreach ($files as $file) {
+            (is_dir("$path/$file")) ? $this->deleteDirectory("$path/$file") : unlink("$path/$file");
+        }
+
+        rmdir($path);
+    }
+
+    private function cleanTempDirectory(
+        string $user,
+        string $repository,
+        string $branch,
+    ): void {
+        unlink($this->tempDownloadPath."$user-$repository-$branch.zip");
+        $localPath = $this->tempDownloadPath."$repository-$branch";
+        $this->deleteDirectory($localPath);
+    }
+
+    public function downloadDoc(
+        string $user,
+        string $repository,
+        string $branch,
+    ): void {
+        $this->downloadZipRepository($user, $repository, $branch);
+        $this->unzipRepository($user, $repository, $branch);
+        $this->moveFilesInPublic($user, $repository, $branch);
+        $this->cleanTempDirectory($user, $repository, $branch);
     }
 
     /**
