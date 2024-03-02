@@ -23,6 +23,24 @@ jobs:
 
       - name: Run tests
         run: make test-coverage-ci
+        
+      - uses: actions/download-artifact@v2
+        with:
+          name: phpunit-coverage
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: phpunit-report
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: phpunit-coverage
+          path: phpunit.coverage.xml
+  
+      - uses: actions/upload-artifact@v2
+        with:
+          name: phpunit-report
+          path: phpunit.report.xml
           
       - name: Fix code coverage paths
         run: sed -i 's@'/var/www/'@/github/workspace/@g' phpunit.coverage.xml phpunit.report.xml
