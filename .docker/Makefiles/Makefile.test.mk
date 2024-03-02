@@ -7,3 +7,6 @@ test: ## Run tests
 
 test-coverage: ## Run tests with coverage
 	$(EXEC_COVERAGE) $(PHPUNIT_PATH) --coverage-html var/coverage
+
+test-coverage-ci: ## Run tests with coverage for CI
+	$(EXEC_COVERAGE) $(PHPUNIT_PATH) --coverage-clover phpunit.coverage.xml --log-junit phpunit.report.xml
