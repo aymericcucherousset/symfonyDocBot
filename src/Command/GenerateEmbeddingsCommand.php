@@ -4,7 +4,7 @@ namespace App\Command;
 
 ini_set('memory_limit', '-1');
 
-use App\Service\DocManager;
+use App\Service\Document\DocManager;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

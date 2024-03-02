@@ -7,6 +7,10 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ChatbotPostTest extends WebTestCase
 {
+    public const HTML_SELECTOR_QUESTION_INPUT = 'input[name="chatbot[question]"]';
+    public const HTML_SELECTOR_VERSION_INPUT = 'select[name="chatbot[version]"]';
+    public const HTML_SELECTOR_SUBMIT_BUTTON = 'button[type="submit"]';
+
     public function testFormIsAvailable(): void
     {
         $client = static::createClient();
@@ -15,9 +19,9 @@ class ChatbotPostTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h1', 'SymfonyDocBot');
         $this->assertSelectorExists('form');
-        $this->assertSelectorExists('input[name="chatbot[question]"]');
-        $this->assertSelectorExists('select[name="chatbot[version]"]');
-        $this->assertSelectorExists('button[type="submit"]');
+        $this->assertSelectorExists(self::HTML_SELECTOR_QUESTION_INPUT);
+        $this->assertSelectorExists(self::HTML_SELECTOR_VERSION_INPUT);
+        $this->assertSelectorExists(self::HTML_SELECTOR_SUBMIT_BUTTON);
 
         $this->assertSelectorNotExists('h2');
     }
@@ -33,9 +37,9 @@ class ChatbotPostTest extends WebTestCase
         $this->assertSelectorTextContains('h1', 'SymfonyDocBot');
         $this->assertSelectorTextContains('li', 'Veuillez remplir ce champ svp.');
         $this->assertSelectorExists('form');
-        $this->assertSelectorExists('input[name="chatbot[question]"]');
-        $this->assertSelectorExists('select[name="chatbot[version]"]');
-        $this->assertSelectorExists('button[type="submit"]');
+        $this->assertSelectorExists(self::HTML_SELECTOR_QUESTION_INPUT);
+        $this->assertSelectorExists(self::HTML_SELECTOR_VERSION_INPUT);
+        $this->assertSelectorExists(self::HTML_SELECTOR_SUBMIT_BUTTON);
 
         $this->assertSelectorNotExists('h2');
     }
@@ -63,9 +67,9 @@ class ChatbotPostTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h1', 'SymfonyDocBot');
         $this->assertSelectorExists('form');
-        $this->assertSelectorExists('input[name="chatbot[question]"]');
-        $this->assertSelectorExists('select[name="chatbot[version]"]');
-        $this->assertSelectorExists('button[type="submit"]');
+        $this->assertSelectorExists(self::HTML_SELECTOR_QUESTION_INPUT);
+        $this->assertSelectorExists(self::HTML_SELECTOR_VERSION_INPUT);
+        $this->assertSelectorExists(self::HTML_SELECTOR_SUBMIT_BUTTON);
         $this->assertSelectorTextContains('h2', 'Réponse');
         $this->assertSelectorTextContains('p', 'To create a controller, you need to');
     }
