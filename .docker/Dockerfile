@@ -31,7 +31,15 @@ RUN apk --no-cache add \
     # Install Symfony CLI
     && curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.alpine.sh' | bash \
     && apk add --no-cache symfony-cli
-    
+
+# Image TEST
+FROM base AS test
+
+RUN apk --update --no-cache add autoconf g++ make autoconf \
+    && pecl install -f xdebug \
+    && docker-php-ext-enable xdebug \
+    && apk del --purge autoconf g++ make
+
 # Image PROD
 FROM base AS prod
 

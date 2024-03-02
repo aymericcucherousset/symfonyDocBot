@@ -16,14 +16,14 @@ jobs:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
       - name: Preprare environment
-        run: cp .env .env.local && cp .env.docker .env.docker.local
+        run: cp .env .env.local && cp .env.docker .env.docker.local && sed -i 's/ENV=dev/ENV=test/g' .env.docker.local
 
       - name: Install dependencies
         run: make install
 
       - name: Run tests
         run: make test-coverage-ci
-        
+
       - uses: actions/download-artifact@v2
         with:
           name: phpunit-coverage
