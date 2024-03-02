@@ -2,6 +2,7 @@
 
 namespace App\Tests\Functional;
 
+use App\Service\ChatManager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ChatbotPostTest extends WebTestCase
@@ -17,6 +18,8 @@ class ChatbotPostTest extends WebTestCase
         $this->assertSelectorExists('input[name="chatbot[question]"]');
         $this->assertSelectorExists('select[name="chatbot[version]"]');
         $this->assertSelectorExists('button[type="submit"]');
+
+        $this->assertSelectorNotExists('h2');
     }
 
     public function testSubmitEmptyForm(): void
@@ -33,5 +36,37 @@ class ChatbotPostTest extends WebTestCase
         $this->assertSelectorExists('input[name="chatbot[question]"]');
         $this->assertSelectorExists('select[name="chatbot[version]"]');
         $this->assertSelectorExists('button[type="submit"]');
+
+        $this->assertSelectorNotExists('h2');
+    }
+
+    public function testIndex(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        $chatManagerMock = $this->createMock(ChatManager::class);
+        $chatManagerMock->method('generateAnswer')
+            ->willReturn('To create a controller, you need to')
+        ;
+
+        $client->getContainer()->set(ChatManager::class, $chatManagerMock);
+
+        $client->request('GET', '/');
+
+        // Submit the form
+        $client->submitForm('Poser la question', [
+            'chatbot[question]' => 'How to create a controller?',
+            'chatbot[version]' => '5.4',
+        ]);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h1', 'SymfonyDocBot');
+        $this->assertSelectorExists('form');
+        $this->assertSelectorExists('input[name="chatbot[question]"]');
+        $this->assertSelectorExists('select[name="chatbot[version]"]');
+        $this->assertSelectorExists('button[type="submit"]');
+        $this->assertSelectorTextContains('h2', 'Réponse');
+        $this->assertSelectorTextContains('p', 'To create a controller, you need to');
     }
 }
