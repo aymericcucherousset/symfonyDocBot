@@ -15,6 +15,7 @@ class ChatManager
     public const FILTER_VERSION = 'version';
 
     private OpenAIConfig $openAIConfig;
+    private QuestionAnswering $questionAnswering;
 
     public function __construct(
         private string $openAiApiKey,
@@ -22,26 +23,19 @@ class ChatManager
     ) {
         $this->openAIConfig = new OpenAIConfig();
         $this->openAIConfig->apiKey = $this->openAiApiKey;
+        // Setting up the question answering service
+        $this->questionAnswering = new QuestionAnswering(
+            new DoctrineVectorStore($this->entityManager, Embedding::class),
+            new OpenAIEmbeddingGenerator($this->openAIConfig),
+            new OpenAIChat($this->openAIConfig)
+        );
     }
 
     public function generateAnswer(
         string $question,
         string $version = '6.4'
     ): string {
-        $vectorStore = new DoctrineVectorStore(
-            $this->entityManager,
-            Embedding::class,
-        );
-
-        $embeddingGenerator = new OpenAIEmbeddingGenerator($this->openAIConfig);
-
-        $qa = new QuestionAnswering(
-            $vectorStore,
-            $embeddingGenerator,
-            new OpenAIChat($this->openAIConfig)
-        );
-
-        return $qa->answerQuestion($question, 4, [
+        return $this->questionAnswering->answerQuestion($question, 4, [
             self::FILTER_VERSION => $version,
         ]);
     }

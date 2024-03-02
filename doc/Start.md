@@ -1,7 +1,7 @@
 # Start
 
 Copy [.env](../.env) to [.env.local](../.env.local):  
-```cp .env .env.local```  
+```cp .env .env.local && cp .env.docker .env.docker.local```  
 
 Setting up OpenAI Api key in [.env.local](../.env.local) file:  
 ```sed -i 's/sk-your-key-here/REPLACE-WITH-YOUR_KEY/g' .env.local```  
