@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Service\DocManager;
+use App\Service\Document\DocManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;

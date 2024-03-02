@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Document;
 
 use App\Entity\Embedding;
 use Doctrine\ORM\EntityManagerInterface;
@@ -14,14 +14,13 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class DocManager
 {
-    private string $publicPath = __DIR__.'/../../public/';
     public const EXTENSION_RST = '.rst';
     public const TYPE_FILE = 'blob';
     public const DIRECTORIES_TO_IGNORE = ['.github', '_build', '_images', '_includes', 'contributing'];
 
     public const SYMFONY_USER = 'symfony';
     public const SYMFONY_REPOSITORY = 'symfony-docs';
-    private const FILE_RIGHTS = 0775;
+    public const FILE_RIGHTS = 0775;
     private const API_GET_METHOD = 'GET';
     public const SYMFONY_VERSIONS = [
         '2.0',
@@ -107,8 +106,10 @@ class DocManager
 
     public function __construct(
         private string $tempDownloadPath,
+        private string $docPath,
         private HttpClientInterface $httpClient,
         private EntityManagerInterface $entityManager,
+        private ZipDocumentManager $zipDocumentManager,
     ) {
     }
 
@@ -117,7 +118,7 @@ class DocManager
         string $repository = self::SYMFONY_REPOSITORY,
         string $branch = '6.4'
     ): string {
-        return $this->publicPath.$user.'-'.$repository.'/'.$branch.'/';
+        return $this->docPath.$user.'-'.$repository.'/'.$branch.'/';
     }
 
     private function createFolderIfNotExists(string $path): void
@@ -142,19 +143,6 @@ class DocManager
 
         // Write the file
         file_put_contents($this->tempDownloadPath."$user-$repository-$branch.zip", $fileContent);
-    }
-
-    public function unzipRepository(
-        string $user,
-        string $repository,
-        string $branch,
-    ): void {
-        $zip = new \ZipArchive();
-        $res = $zip->open($this->tempDownloadPath."$user-$repository-$branch.zip");
-        if (true === $res) {
-            $zip->extractTo($this->tempDownloadPath);
-            $zip->close();
-        }
     }
 
     public function moveFilesInPublic(
@@ -185,6 +173,10 @@ class DocManager
 
     private function deleteDirectory(string $path): void
     {
+        if (!is_dir($path)) {
+            return;
+        }
+
         $files = array_diff(scandir($path), ['.', '..']);
         foreach ($files as $file) {
             (is_dir("$path/$file")) ? $this->deleteDirectory("$path/$file") : unlink("$path/$file");
@@ -193,12 +185,16 @@ class DocManager
         rmdir($path);
     }
 
-    private function cleanTempDirectory(
+    public function cleanTempDirectory(
         string $user,
         string $repository,
         string $branch,
     ): void {
-        unlink($this->tempDownloadPath."$user-$repository-$branch.zip");
+        $zipPath = $this->tempDownloadPath."$user-$repository-$branch.zip";
+        if (file_exists($zipPath)) {
+            unlink($zipPath);
+        }
+
         $localPath = $this->tempDownloadPath."$repository-$branch";
         $this->deleteDirectory($localPath);
     }
@@ -208,10 +204,15 @@ class DocManager
         string $repository,
         string $branch,
     ): void {
-        $this->downloadZipRepository($user, $repository, $branch);
-        $this->unzipRepository($user, $repository, $branch);
-        $this->moveFilesInPublic($user, $repository, $branch);
-        $this->cleanTempDirectory($user, $repository, $branch);
+        try {
+            $this->downloadZipRepository($user, $repository, $branch);
+            $this->zipDocumentManager->unzipRepository($user, $repository, $branch);
+            $this->moveFilesInPublic($user, $repository, $branch);
+            $this->cleanTempDirectory($user, $repository, $branch);
+        } catch (\Throwable $th) {
+            $this->cleanTempDirectory($user, $repository, $branch);
+            throw $th;
+        }
     }
 
     /**
