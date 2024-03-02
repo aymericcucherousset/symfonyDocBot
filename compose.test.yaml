@@ -1,0 +1,35 @@
+---
+version: '3'
+
+services:
+  app:
+    env_file:
+      - .env.docker.local
+    image: aymericcucherousset/symfony-doc-bot-test:1.0
+    container_name: symfony_doc_bot
+    dns:
+      - 8.8.8.8
+    volumes:
+      - .:/var/www/html:rw
+    command: ["symfony", "server:start"]
+    ports:
+      - ${APP_WEB_PORT:-8000}:8000
+    depends_on:
+      - database
+
+  database:
+    image: ankane/pgvector
+    env_file:
+      - .env.docker.local
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-app}
+      # You should definitely change the password in production
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-!ChangeMe!}
+      POSTGRES_USER: ${DATABASE_USER:-app}
+    ports:
+      - ${DATABASE_PORT:-5432}:5432
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+
+volumes:
+  database_data:

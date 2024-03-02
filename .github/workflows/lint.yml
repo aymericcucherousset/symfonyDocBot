@@ -13,20 +13,20 @@ jobs:
               run: cp .env .env.local && cp .env.docker .env.docker.local && sed -i 's/ENV=dev/ENV=test/g' .env.docker.local
       
             - name: Install dependencies
-              run: make install
+              run: make install-test
 
             - name: Lint code
-              run: make sf-lint
+              run: make sf-lint-ci
 
             - name: Phpstan
-              run: make phpstan
+              run: make phpstan-ci
 
             - name: Phpcsfixer
-              run: make php-cs-fixer-dry-run
+              run: make php-cs-fixer-dry-run-ci
 
             - name: Run tests
-              run: make test
+              run: make test-ci
 
             - name: Stop containers
               if: always()
-              run: make docker-down
+              run: make docker-down-ci

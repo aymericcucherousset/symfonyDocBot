@@ -35,7 +35,8 @@ RUN apk --no-cache add \
 # Image TEST
 FROM base AS test
 
-RUN apk --update --no-cache add autoconf g++ make autoconf \
+RUN apk add --update --no-cache linux-headers \
+    && apk --update --no-cache add autoconf g++ make autoconf \
     && pecl install -f xdebug \
     && docker-php-ext-enable xdebug \
     && apk del --purge autoconf g++ make
