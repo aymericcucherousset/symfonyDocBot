@@ -10,8 +10,8 @@ jobs:
               uses: actions/checkout@v3
 
             - name: Preprare environment
-              run: cp .env .env.local && cp .env.docker .env.docker.local
-
+              run: cp .env .env.local && cp .env.docker .env.docker.local && sed -i 's/ENV=dev/ENV=test/g' .env.docker.local
+      
             - name: Install dependencies
               run: make install
 
