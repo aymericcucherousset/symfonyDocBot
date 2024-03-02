@@ -38,7 +38,6 @@ class DocDownloadCommandTest extends KernelTestCase
         );
     }
 
-
     public function testDownloadDocAlreadyDownloaded(): void
     {
         $kernel = self::bootKernel();
