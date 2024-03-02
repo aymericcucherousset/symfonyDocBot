@@ -13,6 +13,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class ChatbotType extends AbstractType
 {
+    public function __construct(
+        private string $docPath
+    ) {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -50,8 +55,7 @@ class ChatbotType extends AbstractType
         $versions = [];
 
         foreach (DocManager::SYMFONY_VERSIONS as $version) {
-            $docPath = $repositoryPath.'/'.$version;
-            // Check if the version is available
+            $docPath = $this->docPath.$repositoryPath.'/'.$version;
             if (file_exists($docPath)) {
                 $versions[$version] = $version;
             }
