@@ -10,6 +10,10 @@ class DocDownloadCommandTest extends KernelTestCase
 {
     public static function removeDirectory(string $directory): void
     {
+        if (!is_dir($directory)) {
+            return;
+        }
+
         $files = array_diff(scandir($directory), ['.', '..']);
         foreach ($files as $file) {
             (is_dir("$directory/$file")) ? self::removeDirectory("$directory/$file") : unlink("$directory/$file");
