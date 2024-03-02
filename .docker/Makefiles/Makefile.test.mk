@@ -38,4 +38,5 @@ php-cs-fixer-dry-run-ci: ## Run PHP CS Fixer
 	$(EXEC_TEST) vendor/bin/php-cs-fixer fix --dry-run --diff
 
 test-ci: ## Run tests
+	$(EXEC_TEST) mkdir -p public/symfony-symfony-docs/5.4
 	$(EXEC_TEST) $(PHPUNIT_PATH)
