@@ -9,9 +9,15 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class ChatbotType extends AbstractType
 {
+    public function __construct(
+        private string $docPath
+    ) {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -19,6 +25,11 @@ class ChatbotType extends AbstractType
                 'label' => 'Question',
                 'attr' => [
                     'placeholder' => 'Posez votre question',
+                ],
+                'constraints' => [
+                    new Assert\NotBlank(
+                        ['message' => 'Veuillez remplir ce champ svp.']
+                    ),
                 ],
                 'required' => true,
             ])
@@ -44,8 +55,7 @@ class ChatbotType extends AbstractType
         $versions = [];
 
         foreach (DocManager::SYMFONY_VERSIONS as $version) {
-            $docPath = $repositoryPath.'/'.$version;
-            // Check if the version is available
+            $docPath = $this->docPath.$repositoryPath.'/'.$version;
             if (file_exists($docPath)) {
                 $versions[$version] = $version;
             }

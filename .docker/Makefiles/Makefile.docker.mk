@@ -2,6 +2,7 @@ DOCKER = docker
 DOCKER_COMPOSE = docker-compose
 DOCKER_WWW = app
 EXEC = $(DOCKER_COMPOSE) exec -t $(DOCKER_WWW)
+EXEC_COVERAGE = $(DOCKER_COMPOSE) exec -t -e XDEBUG_MODE=coverage $(DOCKER_WWW)
 
 ## —— 🐳 Docker 🐳 ——
 
