@@ -6,12 +6,8 @@
     <h1>SymfonyDocBot</h1>
     <article>
         {{ form(form) }}
-
-        {% if answer %}
-            <h2>Réponse:</h2>
-            {% for answerBlock in answer|split('```\n') %}
-                {{ answerBlock|trim('\n', 'right')|markdown_to_html }}
-            {% endfor %}
-        {% endif %}
+        {% for answerBlock in answer|split('```\n') %}
+            {{ answerBlock|trim('\n', 'right')|markdown_to_html }}
+        {% endfor %}
     </article>
 {% endblock %}
