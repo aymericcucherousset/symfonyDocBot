@@ -1,5 +1,5 @@
 PHPUNIT_PATH = vendor/bin/phpunit
-DOCKER_COMPOSE_TEST = docker compose -f docker-compose.test.yml
+DOCKER_COMPOSE_TEST = docker compose -f compose.test.yaml
 EXEC_TEST = $(DOCKER_COMPOSE_TEST) exec -t $(DOCKER_WWW)
 SYMFONY_CONSOLE_TEST = $(EXEC_TEST) bin/console
 EXEC_COVERAGE = $(DOCKER_COMPOSE_TEST) exec -t -e XDEBUG_MODE=coverage $(DOCKER_WWW)
