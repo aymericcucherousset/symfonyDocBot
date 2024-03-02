@@ -5,13 +5,22 @@
 {% block body %}
     <h1>SymfonyDocBot</h1>
     <article>
-        {{ form(form) }}
+        <div class="main">
+            {{ form_start(form) }}
+            {{ form_row(form.question) }}
+            {{ form_row(form.version) }}
+            {{ form_row(form.submit, { 'label': 'Poser la question' }) }}
+            {{ form_end(form) }}
 
-        {% if answer %}
-            <h2>Réponse:</h2>
-            {% for answerBlock in answer|split('```\n') %}
-                {{ answerBlock|trim('\n', 'right')|markdown_to_html }}
-            {% endfor %}
-        {% endif %}
+            <span aria-busy="true" style="display: none;">Génération de la réponse...</span>
+
+            {% if answer %}
+                <h2>Réponse:</h2>
+                {% for answerBlock in answer|split('```\n') %}
+                    {{ answerBlock|trim('\n', 'right')|markdown_to_html }}
+                {% endfor %}
+            {% endif %}
+        </div>
     </article>
+    <script src="{{ asset('js/chat/main.js') }}" />
 {% endblock %}
