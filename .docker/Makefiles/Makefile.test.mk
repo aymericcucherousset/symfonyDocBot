@@ -13,7 +13,7 @@ test-coverage: ## Run tests with coverage
 	$(EXEC_COVERAGE) $(PHPUNIT_PATH) --coverage-html var/coverage
 
 test-coverage-ci: ## Run tests with coverage for CI
-	$(EXEC_TEST) $(PHPUNIT_PATH) mkdir -p public/symfony-symfony-docs/5.4
+	$(EXEC_TEST) mkdir -p public/symfony-symfony-docs/5.4
 	$(EXEC_COVERAGE) $(PHPUNIT_PATH) --coverage-clover phpunit.coverage.xml --log-junit phpunit.report.xml
 
 install-test: ## Install the application
