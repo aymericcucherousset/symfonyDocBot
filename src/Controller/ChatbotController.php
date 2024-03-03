@@ -16,7 +16,7 @@ class ChatbotController extends AbstractController
     ) {
     }
 
-    #[Route('/', name: 'app_chatbot')]
+    #[Route('/{_locale}', name: 'app_chatbot', locale: 'en')]
     public function index(Request $request): Response
     {
         $form = $this->createForm(ChatbotType::class);

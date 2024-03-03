@@ -1,0 +1,18 @@
+---
+home: accueil
+ask:
+    the:
+        question: poser la question
+
+question: question
+version: version
+
+please:
+    fill:
+        in:
+            this:
+                field: veuillez remplir ce champ svp.
+
+response: réponse
+answer:
+    generation: génération de la réponse...

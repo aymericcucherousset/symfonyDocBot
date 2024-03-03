@@ -43,17 +43,17 @@ class GenerateEmbeddingsCommandTest extends KernelTestCase
 
         $output = $commandTester->getDisplay(true);
         $this->assertStringContainsString(
-            'Les données ont été lues avec succès, et',
+            'The data was successfully read, and',
             $output
         );
 
         $this->assertStringContainsString(
-            'Sauvegarde des embeddings',
+            'Saving embeddings.',
             $output
         );
 
         $this->assertStringContainsString(
-            'Les embeddings ont été générés avec succès et stockés en base de données.',
+            'The embeddings were successfully generated and stored in the database.',
             $output
         );
     }

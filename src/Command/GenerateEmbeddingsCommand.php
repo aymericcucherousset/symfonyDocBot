@@ -51,32 +51,32 @@ class GenerateEmbeddingsCommand extends Command
             $repository = DocManager::SYMFONY_REPOSITORY;
         }
 
-        $io->section('Vérification de la version de Symfony');
+        $io->section('Symfony version check');
         if (!DocManager::checkSymfonyVersion($symfonyVersion)) {
             $io->error(
-                'La version de Symfony doit être l\'une des suivantes : '.implode(', ', DocManager::SYMFONY_VERSIONS)
+                'The Symfony version must be one of the following : '.implode(', ', DocManager::SYMFONY_VERSIONS)
             );
 
             return Command::FAILURE;
         }
 
-        $io->title('Embeddings de vos données.');
+        $io->title('Embeddings of your data.');
 
-        $io->section('Lecture des données');
+        $io->section('Reading data');
         $documents = DocManager::getDocuments(
             self::DOC_PATH."$user-$repository/$symfonyVersion/"
         );
 
-        $io->success('Les données ont été lues avec succès, et '.count($documents).' documents ont été trouvés.');
+        $io->success('The data was successfully read, and'.count($documents).' documents were found.');
 
-        $io->section('Découpage des documents');
+        $io->section('Splitting documents');
         $splittedDocuments = $this->docManager->splitDocuments($documents);
 
         $io->success(
-            'Les documents ont été découpés avec succès en '.count($splittedDocuments).' documents de 500 mots maximum.'
+            'The documents were successfully split into '.count($splittedDocuments).' documents of 500 words maximum.'
         );
 
-        $io->section('Génération des embeddings');
+        $io->section('Embedding generation');
         $progressBar = $io->createProgressBar(count($splittedDocuments));
         $progressBar->start();
 
@@ -88,9 +88,9 @@ class GenerateEmbeddingsCommand extends Command
         }
 
         $progressBar->finish();
-        $io->success('Les embeddings ont été générés avec succès.');
+        $io->success('The embeddings were successfully generated.');
 
-        $io->section('Sauvegarde des embeddings');
+        $io->section('Saving embeddings.');
         $progressBar = $io->createProgressBar(count($embeddedDocuments));
         $progressBar->start();
 
@@ -101,10 +101,10 @@ class GenerateEmbeddingsCommand extends Command
         }
 
         $progressBar->finish();
-        $io->success('Les embeddings ont été sauvegardés avec succès.');
+        $io->success('The embeddings have been successfully saved.');
 
         $io->success(
-            'Les embeddings ont été générés avec succès et stockés en base de données.'
+            'The embeddings were successfully generated and stored in the database.'
         );
 
         return Command::SUCCESS;
