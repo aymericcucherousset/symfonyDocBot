@@ -15,7 +15,6 @@ test-coverage: ## Run tests with coverage
 test-coverage-ci: ## Run tests with coverage for CI
 	$(EXEC_TEST) mkdir -p public/symfony-symfony-docs/5.4
 	$(EXEC_COVERAGE) $(PHPUNIT_PATH) --coverage-clover phpunit.coverage.xml --log-junit phpunit.report.xml
-	$(EXEC_TEST) sed -i 's@'/var/www/'@/github/workspace/@g' phpunit.coverage.xml phpunit.report.xml
 
 install-test: ## Install the application
 	@$(call GREEN,"Installing the application")
