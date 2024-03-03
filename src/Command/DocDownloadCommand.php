@@ -50,11 +50,17 @@ class DocDownloadCommand extends Command
             $branch = '6.4';
         }
 
-        $this->docManager->downloadDoc(
-            $user,
-            $repository,
-            $branch,
-        );
+        try {
+            $this->docManager->downloadDoc(
+                $user,
+                $repository,
+                $branch,
+            );
+        } catch (\Throwable $th) {
+            $io->error($th->getMessage());
+
+            return Command::FAILURE;
+        }
 
         $io->success('Documentation has been downloaded in public/'.$user.'-'.$repository.'/'.$branch.'/ directory.');
 

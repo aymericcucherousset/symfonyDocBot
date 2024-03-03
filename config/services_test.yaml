@@ -7,6 +7,11 @@ services:
         autoconfigure: true
         bind:
             $openAiApiKey: '%env(OPENAI_API_KEY)%'
+            $docPath: '%kernel.project_dir%/public/'
+            $tempDownloadPath: '/tmp/'
 
     App\Service\ChatManager:
+        public: true
+
+    App\Service\Document\DocManager:
         public: true
