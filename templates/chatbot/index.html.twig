@@ -7,20 +7,29 @@
     <article>
         <div class="main">
             {{ form_start(form) }}
-            {{ form_row(form.question) }}
-            {{ form_row(form.version) }}
-            {{ form_row(form.submit, { 'label': 'Poser la question' }) }}
+            {{ form_row(form.question, {
+                'label': 'version'|trans|capitalize,
+                'attr': {'placeholder': 'ask.the.question'|trans|capitalize}
+            }) }}
+            {{ form_row(form.version, {
+                'label': 'version'|trans|capitalize
+            }) }}
+            {{ form_row(form.submit, {
+                'label': 'ask.the.question'|trans|capitalize
+            }) }}
             {{ form_end(form) }}
 
-            <span aria-busy="true" style="display: none;">Génération de la réponse...</span>
+            <span aria-busy="true" style="display: none;">
+                {{ 'answer.generation'|trans|capitalize }}
+            </span>
 
             {% if answer %}
-                <h2>Réponse:</h2>
+                <h2>{{ 'response'|trans|capitalize }}:</h2>
                 {% for answerBlock in answer|split('```\n') %}
                     {{ answerBlock|trim('\n', 'right')|markdown_to_html }}
                 {% endfor %}
             {% endif %}
         </div>
     </article>
-    <script src="{{ asset('js/chat/main.js') }}" />
+    <script src="{{ asset('js/chat/main.js') }}"></script>
 {% endblock %}

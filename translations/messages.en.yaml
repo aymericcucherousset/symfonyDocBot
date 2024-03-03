@@ -1,0 +1,18 @@
+---
+home: home
+ask:
+    the:
+        question: ask the question
+
+question: question
+version: version
+
+please:
+    fill:
+        in:
+            this:
+                field: please fill in this field.
+
+response: response
+answer:
+    generation: answer generation...
