@@ -3,6 +3,7 @@
 namespace App\Service\Document;
 
 use App\Entity\Embedding;
+use App\Exception\Repository\BranchNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 use LLPhant\Embeddings\DataReader\FileDataReader;
 use LLPhant\Embeddings\Document;
@@ -133,10 +134,14 @@ class DocManager
         string $repository,
         string $branch,
     ): void {
-        $fileContent = $this->httpClient->request(
-            self::API_GET_METHOD,
-            "https://codeload.github.com/$user/$repository/zip/$branch"
-        )->getContent();
+        try {
+            $fileContent = $this->httpClient->request(
+                self::API_GET_METHOD,
+                "https://codeload.github.com/$user/$repository/zip/$branch"
+            )->getContent();
+        } catch (\Throwable $th) {
+            throw new BranchNotFoundException($branch);
+        }
 
         // Create the directory if it does not exist
         $this->createFolderIfNotExists($this->tempDownloadPath);
@@ -224,10 +229,7 @@ class DocManager
         array $documents,
         int $maxLength = 500
     ): array {
-        return DocumentSplitter::splitDocuments(
-            $documents,
-            $maxLength
-        );
+        return DocumentSplitter::splitDocuments($documents, $maxLength);
     }
 
     public function generateEmbedding(Document $document): Document
@@ -251,10 +253,7 @@ class DocManager
 
     public function getVectorStore(): DoctrineVectorStore
     {
-        return new DoctrineVectorStore(
-            $this->entityManager,
-            Embedding::class
-        );
+        return new DoctrineVectorStore($this->entityManager, Embedding::class);
     }
 
     public function saveEmbedding(

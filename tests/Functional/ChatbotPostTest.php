@@ -3,18 +3,16 @@
 namespace App\Tests\Functional;
 
 use App\Service\ChatManager;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class ChatbotPostTest extends WebTestCase
+class ChatbotPostTest extends AbstractWebTestCase
 {
     public const HTML_SELECTOR_QUESTION_INPUT = 'input[name="chatbot[question]"]';
     public const HTML_SELECTOR_VERSION_INPUT = 'select[name="chatbot[version]"]';
-    public const HTML_SELECTOR_SUBMIT_BUTTON = 'button[type="submit"]';
 
     public function testFormIsAvailable(): void
     {
         $client = static::createClient();
-        $client->request('GET', '/');
+        $client->request(self::HTTP_GET_METHOD, '/');
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h1', 'SymfonyDocBot');
@@ -29,7 +27,7 @@ class ChatbotPostTest extends WebTestCase
     public function testSubmitEmptyForm(): void
     {
         $client = static::createClient();
-        $client->request('GET', '/');
+        $client->request(self::HTTP_GET_METHOD, '/');
 
         $client->submitForm('Poser la question', []);
 
@@ -56,7 +54,7 @@ class ChatbotPostTest extends WebTestCase
 
         $client->getContainer()->set(ChatManager::class, $chatManagerMock);
 
-        $client->request('GET', '/');
+        $client->request(self::HTTP_GET_METHOD, '/');
 
         // Submit the form
         $client->submitForm('Poser la question', [
