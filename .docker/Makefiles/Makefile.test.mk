@@ -22,6 +22,7 @@ install-test: ## Install the application
 	$(EXEC_TEST) composer install
 	$(SYMFONY_CONSOLE_TEST) doctrine:database:create --if-not-exists
 	$(SYMFONY_CONSOLE_TEST) doctrine:migrations:migrate --no-interaction
+	$(EXEC_TEST) npm install && npm run build
 	$(SYMFONY_CONSOLE_TEST) c:c
 	@$(call GREEN,"Application installed")
 

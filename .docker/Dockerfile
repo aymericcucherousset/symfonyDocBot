@@ -1,5 +1,12 @@
 # Image BASE
+FROM node:21-alpine AS node
+
 FROM php:8.3-fpm-alpine AS base
+
+COPY --from=node /usr/lib /usr/lib
+COPY --from=node /usr/local/lib /usr/local/lib
+COPY --from=node /usr/local/include /usr/local/include
+COPY --from=node /usr/local/bin /usr/local/bin
 
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 

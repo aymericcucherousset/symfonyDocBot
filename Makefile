@@ -11,6 +11,7 @@ include .docker/Makefiles/Makefile.composer.mk
 include .docker/Makefiles/Makefile.symfony.mk
 include .docker/Makefiles/Makefile.test.mk
 include .docker/Makefiles/Makefile.database.mk
+include .docker/Makefiles/Makefile.npm.mk
 include .docker/Makefiles/Makefile.tools.mk
 include .docker/Makefiles/Makefile.app.mk
 
