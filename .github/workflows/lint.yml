@@ -24,9 +24,6 @@ jobs:
             - name: Phpcsfixer
               run: make php-cs-fixer-dry-run-ci
 
-            - name: Npm install and build
-              run: make npm-install && make npm-dev
-
             - name: Run tests
               run: make test-ci
 
