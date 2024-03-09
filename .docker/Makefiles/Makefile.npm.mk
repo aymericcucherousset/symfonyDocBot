@@ -16,3 +16,6 @@ npm-build: ## Build npm assets
 
 npm-watch: ## Watch npm assets
 	$(NPM) run watch
+
+npm-dev: ## Run npm dev
+	$(NPM) run dev

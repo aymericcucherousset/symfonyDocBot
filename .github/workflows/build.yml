@@ -19,7 +19,7 @@ jobs:
         run: cp .env .env.local && cp .env.docker .env.docker.local && sed -i 's/ENV=dev/ENV=test/g' .env.docker.local
 
       - name: Npm install and build
-        run: make npm-install && make npm-build
+        run: make npm-install && make npm-dev
 
       - name: Install dependencies
         run: make install-test
